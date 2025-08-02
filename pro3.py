@@ -1,5 +1,5 @@
 import streamlit as st
-#from fpdf import FPDF
+from fpdf import FPDF
 import google.generativeai as genai
 
 # ---- Gemini API configuration ----
@@ -59,7 +59,16 @@ Include ONLY the following in this response:
         st.subheader("📘 Project Guide")
         st.text_area("View Guide", guide_text, height=400)
 
-       
+        # Generate PDF for download
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+        for line in guide_text.split('\n'):
+            pdf.multi_cell(0, 10, line.encode('latin-1', 'replace').decode('latin-1'))
+        pdf.output("guide.pdf")
+        with open("guide.pdf", "rb") as f:
+            st.download_button("⬇ Download Guide (PDF)", f, file_name="Project_Guide.pdf")
+
     # ---- Code Snippets ----
     if code_btn:
         with st.spinner("Generating code snippets..."):
@@ -71,7 +80,7 @@ Include ONLY the following in this response:
 
         st.subheader("💻 Code Snippets")
         st.text_area("View Code Snippets", code_text, height=200)
-      
+        st.download_button("⬇ Download Code Snippets", code_text, file_name="CodeSnippets.py")
 
     # ---- Viva Q&A ----
     if viva_btn:
@@ -83,7 +92,7 @@ Include ONLY the following in this response:
 
         st.subheader("🎓 Viva Questions & Answers")
         st.text_area("View Viva Q&A", viva_text, height=200)
-      #  st.download_button("⬇ Download Viva Q&A", viva_text, file_name="Viva_QA.txt")
+        st.download_button("⬇ Download Viva Q&A", viva_text, file_name="Viva_QA.txt")
 
     # ---- Documentation ----
     if doc_btn:
@@ -95,8 +104,7 @@ Include ONLY the following in this response:
 
         st.subheader("📚 Full Documentation")
         st.text_area("View Documentation", doc_text, height=200)
-       # st.download_button("⬇ Download Documentation", doc_text, file_name="Documentation.txt")
+        st.download_button("⬇ Download Documentation", doc_text, file_name="Documentation.txt")
 
 else:
     st.info("👆 Enter a project title to begin.")
-
